@@ -1,0 +1,7 @@
+apiVersion: v1 
+kind: ConfigMap
+metadata:
+  name: config-front
+  namespace: nexora
+data:
+  BACKEND_URL: "http://svc-back:5000"

@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { @apply bg-background text-slate-200 antialiased; }
+.input { @apply w-full rounded-lg bg-background border border-slate-600 px-3 py-2 text-sm outline-none focus:border-primary; }
+.btn { @apply rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50; }
+.btn-ghost { @apply rounded-lg border border-slate-600 px-4 py-2 text-sm hover:bg-slate-700; }
+.th { @apply px-4 py-3 text-left text-xs font-semibold uppercase text-slate-400; }
+.td { @apply px-4 py-3 text-sm; }

@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: mydeploy-front
+  namespace: nexora
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: front 
+  template:
+    metadata:
+      labels:
+        app: front
+    spec:
+       tolerations:
+        - key: name
+          operator: Equal
+          value: osama
+          effect: NoSchedule
+       affinity:
+         nodeAffinity:
+           requiredDuringSchedulingIgnoredDuringExecution:
+             nodeSelectorTerms:
+             - matchExpressions:
+               - key: team
+                 operator: In
+                 values:
+                 - devops
+       containers:
+        - name: my-image
+          image: osamaahmed123456/nexora-front:v1
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: config-front
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 15  
+          readinessProbe:
+            httpGet: 
+              path: /ready
+              port: 80 
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          startupProbe:
+            httpGet: 
+              path: /start 
+              port: 80
+            failureThreshold: 30
+            periodSeconds: 10

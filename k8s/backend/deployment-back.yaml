@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mydeploy-back
+  namespace: nexora
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: back
+  template:
+    metadata:
+      labels:
+        app: back
+    spec:
+      tolerations:
+        - key: name
+          operator: Equal
+          value: osama
+          effect: NoSchedule
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: team
+                operator: In
+                values:
+                - devops
+      volumes:
+        - name: backend-volume
+          persistentVolumeClaim:
+            claimName: pvc-backend
+      initContainers:
+        - name: init-myservice
+          image: busybox
+          command: ["sh", "-c", "until nc -z mysql 3306; do echo waiting for mysql; sleep 2; done"]
+          volumeMounts:
+            - name: backend-volume
+              mountPath: /mnt/data
+      containers:
+        - name: my-image
+          image: osamaahmed123456/nexora-back:v1
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /start
+              port: 80
+            failureThreshold: 30
+            periodSeconds: 10
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - secretRef:
+                name: backend-secret
+          volumeMounts:
+            - name: backend-volume
+              mountPath: /mnt/data

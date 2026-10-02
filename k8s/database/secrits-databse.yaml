@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret    
+  namespace: nexora
+type: Opaque
+stringData:
+  MYSQL_ROOT_PASSWORD: "123"
+  MYSQL_DATABASE: "nexora"
+  MYSQL_USER: "osama"
+  MYSQL_PASSWORD: "123" 
+    

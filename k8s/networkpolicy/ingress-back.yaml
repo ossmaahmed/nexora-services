@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: backend-ingress-policy
+  namespace: nexora
+
+spec:
+  podSelector:
+    matchLabels:
+      app: back
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+
+    # Allow frontend pods to access backend on port 5000
+    - from:
+        - podSelector:
+            matchLabels:
+              app: front
+      ports:
+        - port: 5000
+          protocol: TCP
+
+    # Allow ingress-nginx namespace to access backend
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 5000
+          protocol: TCP
+        - port: 80
+          protocol: TCP
